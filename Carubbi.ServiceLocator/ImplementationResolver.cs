@@ -211,7 +211,7 @@ namespace Carubbi.ServiceLocator
             return (T)Resolve(key, parameters);
         }
 
-        public static List<T> GetPlugins<T>(string path = null) where T: class, new()
+        public static List<T> GetPlugins<T>(string path = null)
         {
             var plugins = new List<T>();
             var requiredTypes = new[] {typeof(T), typeof(IPlugin)};
