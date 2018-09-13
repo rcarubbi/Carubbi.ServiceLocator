@@ -2,6 +2,6 @@
 {
     public interface IPlugin
     {
-        public string Name { get; set; }
+        string Name { get; set; }
     }
 }
