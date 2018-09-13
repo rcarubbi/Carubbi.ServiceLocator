@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -208,5 +210,22 @@ namespace Carubbi.ServiceLocator
         {
             return (T)Resolve(key, parameters);
         }
+
+        public static List<T> GetPlugins<T>(string path = null) where T: class, new()
+        {
+            var plugins = new List<T>();
+            var requiredTypes = new[] {typeof(T), typeof(IPlugin)};
+            path = path ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var di = new DirectoryInfo(path ?? throw new ArgumentNullException(nameof(path)));
+
+            foreach (var file in di.EnumerateFiles("*.dll"))
+            {
+                var plugin = Assembly.LoadFrom(file.FullName);
+                var types = plugin.GetTypes();
+                plugins.AddRange(types.Where(t => requiredTypes.Intersect(t.GetInterfaces()).Count() == 2).Select(t => (T) Activator.CreateInstance(t)));
+            }
+
+            return plugins;
+        } 
     }
 }
